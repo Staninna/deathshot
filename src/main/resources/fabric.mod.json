@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "deathshot",
+  "version": "${version}",
+  "name": "deathshot",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/deathshot/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "org.staninna.deathshot.client.DeathshotClient"
+    ],
+    "main": [
+      "org.staninna.deathshot.Deathshot"
+    ]
+  },
+  "mixins": [
+    "deathshot.mixins.json",
+    {
+      "config": "deathshot.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
