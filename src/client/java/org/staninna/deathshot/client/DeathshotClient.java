@@ -27,11 +27,11 @@ public class DeathshotClient implements ClientModInitializer {
         // no need
     }
 
-    public static void saveScreenShot() {
+    public static void saveScreenShot(float x, float y, float z) {
         NativeImage nativeImage = ScreenshotRecorder.takeScreenshot(MinecraftClient.getInstance().getFramebuffer());
         File file = new File(MinecraftClient.getInstance().runDirectory, "death-shots");
         file.mkdir();
-        File file2 = getScreenshotFilename(file);
+        File file2 = getScreenshotFilename(file, x, y, z);
         Util.getIoWorkerExecutor().execute(() -> {
             try {
                 nativeImage.writeTo(file2);
@@ -47,11 +47,12 @@ public class DeathshotClient implements ClientModInitializer {
         });
     }
 
-    private static File getScreenshotFilename(File directory) {
+    private static File getScreenshotFilename(File directory, float x, float y, float z) {
         String string = DATE_FORMAT.format(new Date());
+        String coordinates = String.format("@x%.2fy%.2fz%.2f", x, y, z);
         int i = 1;
         File file;
-        while ((file = new File(directory, string + (i == 1 ? "" : "_" + i) + ".png")).exists()) {
+        while ((file = new File(directory, string + coordinates + (i == 1 ? "" : "_" + i) + ".png")).exists()) {
             ++i;
         }
         return file;
