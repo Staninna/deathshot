@@ -1,5 +1,6 @@
 package org.staninna.deathshot.client.mixin;
 
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Unique;
 import org.staninna.deathshot.client.DeathshotClient;
 import net.minecraft.client.MinecraftClient;
@@ -15,22 +16,50 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MinecraftClient.class)
 public class MinecraftClientMixin {
-
     @Shadow @Nullable public Screen currentScreen;
-    private boolean tookDeathShot;
+
+    @Unique
+    private boolean shouldTakeScreenshot;
+    @Unique
+    private boolean isDead;
+
+    @Unique
+    private static final boolean DELAYED_MODE = false; // false = instant screenshot, true = print coords & wait
 
     @Inject(method = "tick", at = @At("HEAD"))
     public void onTick(CallbackInfo ci) {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
-        if(player == null)
-            return;
-        if(!tookDeathShot && player.isDead()) {
-            if(player.showsDeathScreen() && !(currentScreen instanceof DeathScreen))
-                return;
-            tookDeathShot = true;
+        if (player == null) return;
+
+        if (shouldTakeScreenshot) {
             DeathshotClient.saveScreenShot();
-        } else if(tookDeathShot && !player.isDead()) {
-            tookDeathShot = false;
+            shouldTakeScreenshot = false;
+            return;
         }
+
+        boolean isPlayerDead = player.isDead();
+        if (!isDead && isPlayerDead) {
+            if (player.showsDeathScreen() && !(currentScreen instanceof DeathScreen)) return;
+
+            if (DELAYED_MODE) {
+                printCoordinates(player);
+                shouldTakeScreenshot = true;
+            } else {
+                DeathshotClient.saveScreenShot();
+            }
+        }
+        isDead = isPlayerDead;
+    }
+
+    @Unique
+    private void printCoordinates(ClientPlayerEntity player) {
+        float x = (float) Math.round(player.getX() * 100) / 100;
+        float y = (float) Math.round(player.getY() * 100) / 100;
+        float z = (float) Math.round(player.getZ() * 100) / 100;
+
+        MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(
+                Text.literal("Current coordinates: ")
+                        .append(Text.literal(x + " " + y + " " + z))
+        );
     }
 }

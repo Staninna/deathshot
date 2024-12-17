@@ -38,12 +38,10 @@ public class DeathshotClient implements ClientModInitializer {
                 MutableText text = Text.literal(file2.getName()).formatted(Formatting.UNDERLINE).styled(style -> style.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_FILE, file2.getAbsolutePath())));
                 MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(Text.literal("Took death-shot: ").append(text));
 
-            }
-            catch (Exception text) {
-                LogManager.getLogger().warn("Couldn't save death-screenshot", (Throwable)text);
+            } catch (Exception text) {
+                LogManager.getLogger().warn("Couldn't save death-screenshot", (Throwable) text);
                 MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(Text.literal("Couldn't save death-screenshot..."));
-            }
-            finally {
+            } finally {
                 nativeImage.close();
             }
         });
