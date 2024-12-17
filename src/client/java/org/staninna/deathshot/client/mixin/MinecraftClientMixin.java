@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(MinecraftClient.class)
 public class MinecraftClientMixin {
 
-    @Unique @Shadow @Nullable public Screen currentScreen;
+    @Shadow @Nullable public Screen currentScreen;
     private boolean tookDeathShot;
 
     @Inject(method = "tick", at = @At("HEAD"))
